@@ -190,6 +190,29 @@ public class CatalogMgr {
         }
     }
 
+    public void alterCatalog(String catalogName, Map<String, String> properties) {
+        writeLock();
+        try {
+            Catalog catalog = catalogs.get(catalogName);
+            if (catalog == null) {
+                return;
+            }
+            String serviceName = properties.get("ranger.plugin.hive.service.name");
+            if (serviceName.isEmpty()) {
+                Authorizer.getInstance().setAccessControl(catalogName, new NativeAccessController());
+            } else {
+                Authorizer.getInstance().setAccessControl(catalogName, new RangerHiveAccessController(serviceName));
+            }
+
+            catalog.getConfig().put("ranger.plugin.hive.service.name", serviceName);
+
+            AlterCatalogLog alterCatalogLog = new AlterCatalogLog(catalogName, properties);
+            GlobalStateMgr.getCurrentState().getEditLog().logAlterCatalog(alterCatalogLog);
+        } finally {
+            writeUnLock();
+        }
+    }
+
     // TODO @caneGuy we should put internal catalog into catalogmgr
     public boolean catalogExists(String catalogName) {
         if (catalogName.equalsIgnoreCase(InternalCatalog.DEFAULT_INTERNAL_CATALOG_NAME)) {

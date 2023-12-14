@@ -80,7 +80,7 @@ public class Config extends ConfigBase {
     @ConfField
     public static String sys_log_dir = StarRocksFE.STARROCKS_HOME_DIR + "/log";
     @ConfField
-    public static String sys_log_level = "INFO";
+    public static String sys_log_level = "DEBUG";
     @ConfField
     public static int sys_log_roll_num = 10;
     @ConfField

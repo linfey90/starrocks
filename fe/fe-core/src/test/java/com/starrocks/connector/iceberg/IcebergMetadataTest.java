@@ -234,7 +234,7 @@ public class IcebergMetadataTest extends TableTestBase {
     @Test
     public void testCreateDbInvalidateLocation() {
         Map<String, String> config = new HashMap<>();
-        config.put(HIVE_METASTORE_URIS, "thrift://188.122.12.1:8732");
+        config.put(HIVE_METASTORE_URIS, "thrift://10.0.30.10:9083");
         config.put(ICEBERG_CATALOG_TYPE, "hive");
         IcebergHiveCatalog icebergHiveCatalog = new IcebergHiveCatalog("iceberg_catalog", new Configuration(), config);
         IcebergMetadata metadata = new IcebergMetadata(CATALOG_NAME, HDFS_ENVIRONMENT, icebergHiveCatalog);
@@ -248,7 +248,7 @@ public class IcebergMetadataTest extends TableTestBase {
         };
 
         try {
-            metadata.createDb("iceberg_db", ImmutableMap.of("location", "hdfs:xx/aaaxx"));
+            metadata.createDb("fdb", ImmutableMap.of("location", "hdfs://node10:9000/user/fy/fdb.db"));
             Assert.fail();
         } catch (Exception e) {
             Assert.assertTrue(e instanceof StarRocksConnectorException);

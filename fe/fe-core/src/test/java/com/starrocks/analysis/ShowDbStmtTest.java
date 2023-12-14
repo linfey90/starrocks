@@ -136,6 +136,16 @@ public class ShowDbStmtTest {
     }
 
     @Test
+    public void showCatalogDBS() throws Exception{
+        ShowDbStmt stmt = new ShowDbStmt(null, null, null);
+        ConnectContext context = new ConnectContext(null);
+        ShowExecutor executor = new ShowExecutor(context, stmt);
+        ShowResultSet resultSet = executor.execute();
+        ShowResultSetMetaData metaData = resultSet.getMetaData();
+        Assert.assertEquals(metaData.getColumn(0).getName(), "Database");
+    }
+
+    @Test
     public void testShowSchemas() throws Exception {
         ctx.setExecutionId(UUIDUtil.toTUniqueId(UUIDUtil.genUUID()));
         String showSQL = "show schemas";

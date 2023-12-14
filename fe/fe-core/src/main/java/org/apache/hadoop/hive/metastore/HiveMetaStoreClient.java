@@ -183,6 +183,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static org.apache.hadoop.hive.metastore.utils.MetaStoreUtils.getDefaultCatalog;
 
 /**
@@ -852,14 +853,37 @@ public class HiveMetaStoreClient implements IMetaStoreClient, AutoCloseable {
 
     @Override
     public List<String> getAllDatabases() throws MetaException, TException {
-        return client.get_all_databases();
+        String catName = MetastoreConf.getVar(conf, MetastoreConf.ConfVars.CATALOG_DEFAULT);
+        if (catName == null || "".equals(catName)) {
+            return client.get_all_databases();
+        } else {
+            return client.get_databases(prependToDatabaseName(catName, "*"));
+        }
+
     }
 
     @Override
     public List<String> getAllDatabases(String catName) throws MetaException, TException {
-        throw new TException("method not implemented");
+        return client.get_databases(prependToDatabaseName(catName, "*"));
     }
 
+    public static final char MARKER_CATALOG = '@';
+    public static final String MARKER_DATABASE = "#";
+    public static String prependToDatabaseName(String catalogName, String dbName) {
+        checkArgument(catalogName != null && !org.apache.commons.lang3.StringUtils.isEmpty(catalogName.trim()), "catalogName is null or empty");
+        checkArgument(dbName != null && !org.apache.commons.lang3.StringUtils.isEmpty(dbName.trim()), "dbName is null or empty");
+
+        // Compatible with hive 2.x
+        if (catalogName.compareToIgnoreCase("hive") == 0) {
+            return dbName;
+        }
+        StringBuilder buf = new StringBuilder()
+                .append(MARKER_CATALOG)
+                .append(catalogName)
+                .append(MARKER_DATABASE)
+                .append(dbName);
+        return buf.toString();
+    }
     @Override
     public List<String> getTables(String dbName, String tablePattern)
             throws MetaException, TException, UnknownDBException {

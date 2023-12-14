@@ -48,6 +48,19 @@ public class CatalogMgrTest {
         String createCatalog = "CREATE EXTERNAL CATALOG hive_catalog PROPERTIES(\"type\"=\"hive\", \"hive.metastore.uris\"=\"thrift://127.0.0.1:9083\")";
         starRocksAssert = new StarRocksAssert();
         starRocksAssert.withCatalog(createCatalog);
+        createCatalog = "CREATE EXTERNAL CATALOG hive_catalog_11\n" +
+                "PROPERTIES(\n" +
+                "    \"type\" = \"hive\",\n" +
+                "    \"hive.metastore.type\" = \"hive\",\n" +
+                "    \"hive.metastore.uris\" = \"thrift://10.0.30.10:9083\",\n" +
+                "    \"dlink.catalog.name\"='acc_37'\n" +
+                ");";
+        starRocksAssert.withCatalog(createCatalog);
+    }
+
+    @Test
+    public void Test() {
+
     }
 
     @After

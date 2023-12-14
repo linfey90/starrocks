@@ -29,6 +29,8 @@ import com.starrocks.utframe.StarRocksAssert;
 import com.starrocks.utframe.UtFrameUtils;
 import mockit.Expectations;
 import mockit.Mocked;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.metastore.HiveMetaStoreClient;
 import org.apache.hadoop.hive.metastore.api.Database;
 import org.apache.hadoop.hive.metastore.api.FieldSchema;
@@ -61,6 +63,23 @@ public class MetadataMgrTest {
         starRocksAssert.withTable(createTbl);
     }
 
+    @Test
+    public void test() throws Exception{
+        // 初始化 Hive 配置
+        Configuration conf = new HiveConf();
+//        conf.set("hive.metastore.uris", "thrift://10.0.30.10:9083");
+        conf.set("hive.metastore.uris", "thrift://10.201.0.86:32087");
+        // 创建 HiveMetaStoreClient 对象
+        HiveMetaStoreClient client = new HiveMetaStoreClient(conf);
+//        client.getCatalogs().forEach(System.out::println);
+
+        System.out.println("----------------");
+        List<String> allDatabases = client.getAllDatabases();
+        allDatabases.forEach(System.out::println);
+        System.out.println("----------------");
+        allDatabases = client.getAllDatabases("acc_37");
+        allDatabases.forEach(System.out::println);
+    }
     @Test
     public void testListDbNames(@Mocked HiveMetaStoreClient metaStoreThriftClient) throws TException, DdlException {
         new Expectations() {

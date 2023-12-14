@@ -29,6 +29,7 @@ import com.starrocks.server.GlobalStateMgr;
 import com.starrocks.sql.analyzer.AnalyzeTestUtil;
 import com.starrocks.sql.ast.CreateCatalogStmt;
 import com.starrocks.sql.ast.ShowCatalogsStmt;
+import com.starrocks.sql.ast.ShowStmt;
 import com.starrocks.sql.ast.StatementBase;
 import com.starrocks.sql.ast.UserIdentity;
 import com.starrocks.utframe.StarRocksAssert;
@@ -80,9 +81,15 @@ public class ShowCatalogsStmtTest {
     }
 
     @Test
-    public void testShowCatalogsParserAndAnalyzer() {
+    public void testShowCatalogsParserAndAnalyzer() throws Exception{
         String sql_1 = "SHOW CATALOGS";
         StatementBase stmt = AnalyzeTestUtil.analyzeSuccess(sql_1);
         Assert.assertTrue(stmt instanceof ShowCatalogsStmt);
+
+        ConnectContext connectCtx = new ConnectContext();
+        connectCtx.setGlobalStateMgr(GlobalStateMgr.getCurrentState());
+        ShowExecutor executor = new ShowExecutor(ctx, (ShowCatalogsStmt) stmt);
+        ShowResultSet resultSet = executor.execute();
+        resultSet.getResultRows().forEach(System.out::println);
     }
 }

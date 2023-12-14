@@ -1351,10 +1351,12 @@ public class StmtExecutor {
     }
 
     // Process use [catalog].db statement.
-    private void handleUseDbStmt() throws AnalysisException {
-        UseDbStmt useDbStmt = (UseDbStmt) parsedStmt;
+    // Process use catalog statement
+    private void handleUseCatalogStmt() throws AnalysisException {
+        UseCatalogStmt useCatalogStmt = (UseCatalogStmt) parsedStmt;
         try {
-            context.getGlobalStateMgr().changeCatalogDb(context, useDbStmt.getIdentifier());
+            String catalogName = useCatalogStmt.getCatalogName();
+            context.getGlobalStateMgr().changeCatalog(context, catalogName);
         } catch (Exception e) {
             context.getState().setError(e.getMessage());
             return;
@@ -1362,12 +1364,10 @@ public class StmtExecutor {
         context.getState().setOk();
     }
 
-    // Process use catalog statement
-    private void handleUseCatalogStmt() throws AnalysisException {
-        UseCatalogStmt useCatalogStmt = (UseCatalogStmt) parsedStmt;
+    private void handleUseDbStmt() throws AnalysisException {
+        UseDbStmt useDbStmt = (UseDbStmt) parsedStmt;
         try {
-            String catalogName = useCatalogStmt.getCatalogName();
-            context.getGlobalStateMgr().changeCatalog(context, catalogName);
+            context.getGlobalStateMgr().changeCatalogDb(context, useDbStmt.getIdentifier());
         } catch (Exception e) {
             context.getState().setError(e.getMessage());
             return;

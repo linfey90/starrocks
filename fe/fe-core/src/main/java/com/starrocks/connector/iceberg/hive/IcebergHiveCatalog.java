@@ -105,6 +105,12 @@ public class IcebergHiveCatalog implements IcebergCatalog {
                 .collect(Collectors.toList());
     }
 
+    public List<String> listAllDatabases(String catalogName) {
+        return delegate.listNamespaces(Namespace.empty()).stream()
+                .map(ns -> ns.level(0))
+                .collect(Collectors.toList());
+    }
+
     @Override
     public void createDb(String dbName, Map<String, String> properties) {
         properties = properties == null ? new HashMap<>() : properties;
